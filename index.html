@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Практика — Сдача проекта: Проектный режим в ИИ-инструментах</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f4f8;
+    min-height: 100vh;
+    padding: 1.5rem 1rem;
+    color: #1a2332;
+  }
+
+  .page-wrap { max-width: 760px; margin: 0 auto; }
+
+  /* ── HEADER ── */
+  .header-block {
+    background: linear-gradient(135deg, #1a3560 0%, #2563a8 100%);
+    border-radius: 14px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.5rem;
+    color: white;
+  }
+  .course-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; background: rgba(255,255,255,0.18);
+    border-radius: 20px; padding: 3px 12px; display: inline-block; margin-bottom: 0.875rem;
+  }
+  .header-block h1 { font-size: 1.35rem; font-weight: 700; line-height: 1.3; margin-bottom: 0.4rem; }
+  .header-block p  { font-size: 0.875rem; opacity: 0.85; line-height: 1.5; }
+  .competency-strip { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1rem; }
+  .comp-badge {
+    font-size: 10px; font-weight: 600;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px; padding: 3px 10px;
+  }
+
+  /* ── INSTRUCTIONS ── */
+  .instructions-strip {
+    background: #eef4ff; border: 1px solid #c2d7f5;
+    border-radius: 10px; padding: 0.875rem 1.125rem;
+    margin-bottom: 1.25rem; font-size: 13px; color: #1a3560; line-height: 1.6;
+  }
+
+  /* ── CARDS ── */
+  .section-card {
+    background: white; border-radius: 12px;
+    border: 0.5px solid #dde3ec;
+    padding: 1.5rem 1.75rem; margin-bottom: 1.125rem;
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1.125rem; padding-bottom: 0.75rem;
+    border-bottom: 0.5px solid #edf0f7;
+  }
+  .step-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #1a3560; color: white;
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .section-title { font-size: 1rem; font-weight: 600; color: #1a2332; }
+  .section-hint  { font-size: 11px; color: #6b7a99; margin-left: auto; white-space: nowrap; }
+
+  /* ── FIELDS ── */
+  .field-group { margin-bottom: 1.125rem; }
+  .field-group:last-child { margin-bottom: 0; }
+
+  label { display: block; font-size: 13px; font-weight: 600; color: #2d3a52; margin-bottom: 5px; line-height: 1.4; }
+  label .req  { color: #d64040; margin-left: 2px; }
+  label .hint { font-size: 11px; font-weight: 400; color: #8a95b0; display: block; margin-top: 2px; }
+
+  input[type="text"], select, textarea {
+    width: 100%; border: 1px solid #ccd3e3; border-radius: 8px;
+    padding: 10px 12px; font-size: 14px; font-family: inherit;
+    color: #1a2332; background: #fafbfd;
+    transition: border-color 0.2s, box-shadow 0.2s; resize: vertical;
+    -webkit-appearance: none;
+  }
+  input[type="text"]:focus, select:focus, textarea:focus {
+    outline: none; border-color: #2563a8;
+    box-shadow: 0 0 0 3px rgba(37,99,168,0.12); background: white;
+  }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .char-counter { font-size: 11px; color: #8a95b0; text-align: right; margin-top: 3px; }
+  .char-counter.warn { color: #d64040; font-weight: 600; }
+  .char-limit-bar  { height: 3px; background: #edf0f7; border-radius: 3px; margin-top: 5px; overflow: hidden; }
+  .char-limit-fill { height: 100%; border-radius: 3px; background: #2563a8; transition: width 0.2s, background 0.2s; }
+
+  /* ── OUTPUT TYPE TILES ── */
+  .output-type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px; margin-top: 4px;
+  }
+  .output-option { position: relative; }
+  .output-option input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+  .output-option label {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    padding: 10px 6px; border: 1px solid #ccd3e3; border-radius: 10px;
+    cursor: pointer; text-align: center; font-size: 11px; font-weight: 500;
+    color: #4a5568; background: #fafbfd; transition: all 0.15s; margin: 0;
+    min-height: 64px; justify-content: center;
+  }
+  .output-option label .icon { font-size: 1.4rem; }
+  .output-option input:checked + label {
+    border-color: #2563a8; background: #eff5ff; color: #1a3560;
+    box-shadow: 0 0 0 2px rgba(37,99,168,0.18);
+  }
+  .output-option label:hover { border-color: #2563a8; background: #f5f8ff; }
+
+  /* ── UPLOAD ZONES ── */
+  .upload-zone {
+    border: 2px dashed #b8c3da; border-radius: 12px; padding: 1.5rem 1rem;
+    text-align: center; cursor: pointer; background: #f8faff;
+    transition: all 0.2s; position: relative;
+  }
+  .upload-zone.kb-zone { background: #f5f0ff; border-color: #c4aef5; }
+  .upload-zone.kb-zone:hover, .upload-zone.kb-zone.dragover { border-color: #7c4dff; background: #ede7ff; }
+  .upload-zone:hover, .upload-zone.dragover { border-color: #2563a8; background: #eff5ff; }
+  .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon    { font-size: 2rem; margin-bottom: 6px; display: block; }
+  .upload-text    { font-size: 13px; font-weight: 600; color: #2d3a52; margin-bottom: 3px; }
+  .upload-sub     { font-size: 12px; color: #8a95b0; }
+  .upload-formats { font-size: 11px; color: #8a95b0; margin-top: 5px; }
+
+  /* required badge on KB upload */
+  .upload-req-badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    background: #7c4dff; color: white; border-radius: 10px;
+    padding: 2px 8px; margin-bottom: 6px; letter-spacing: 0.04em;
+  }
+
+  .file-preview {
+    display: none; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 10px; margin-top: 8px;
+  }
+  .file-preview.result-prev { background: #eef4ff; border: 1px solid #b8d0f5; }
+  .file-preview.kb-prev     { background: #ede7ff; border: 1px solid #c4aef5; }
+  .file-preview.show        { display: flex; }
+  .file-preview-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .file-preview-name { font-size: 13px; font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .result-prev .file-preview-name { color: #1a3560; }
+  .kb-prev     .file-preview-name { color: #4a1fa8; }
+  .file-preview-size { font-size: 11px; color: #6b7a99; flex-shrink: 0; }
+  .file-remove { background: none; border: none; cursor: pointer; font-size: 1.1rem; color: #d64040; padding: 4px; flex-shrink: 0; }
+
+  /* ── KB SECTION ── */
+  .kb-accent { border-color: #c4aef5 !important; }
+  .kb-accent .section-header { border-bottom-color: #ede7ff !important; }
+  .kb-accent .step-num { background: #6b3fd4; }
+
+  .kb-tag-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 5px; }
+  .kb-tag-option { position: relative; }
+  .kb-tag-option input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+  .kb-tag-option label {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 12px; border: 1px solid #ccd3e3; border-radius: 20px;
+    cursor: pointer; font-size: 12px; font-weight: 500; color: #4a5568;
+    background: #fafbfd; transition: all 0.15s; margin: 0;
+  }
+  .kb-tag-option input:checked + label {
+    border-color: #7c4dff; background: #ede7ff; color: #4a1fa8;
+    box-shadow: 0 0 0 2px rgba(124,77,255,0.15);
+  }
+  .kb-tag-option label:hover { border-color: #7c4dff; background: #f5f0ff; }
+
+  /* ── PROMPT NOTE ── */
+  .prompt-note {
+    font-size: 13px; color: #6b7a99; margin-bottom: 1rem; line-height: 1.5;
+    padding: 10px 13px; background: #fafbfd;
+    border-left: 3px solid #2563a8; border-radius: 0 6px 6px 0;
+  }
+  .prompt-note.kb-note { border-left-color: #7c4dff; background: #f8f5ff; }
+
+  /* ── APPLY BLOCK ── */
+  .apply-block {
+    background: #f0f7ff; border: 1px solid #c2d7f5;
+    border-radius: 10px; padding: 1.25rem; margin-top: 0;
+  }
+  .apply-block-title { font-size: 13px; font-weight: 600; color: #1a3560; margin-bottom: 0.875rem; }
+
+  /* ── CONSENT ── */
+  .consent-block { background: #fffbf0; border: 1px solid #f5d87b; border-radius: 10px; padding: 1rem 1.125rem; }
+  .consent-row { display: flex; gap: 10px; align-items: flex-start; }
+  .consent-row input[type="checkbox"] { margin-top: 3px; width: 17px; height: 17px; cursor: pointer; flex-shrink: 0; accent-color: #2563a8; }
+  .consent-row label { font-size: 13px; color: #4a3a00; cursor: pointer; font-weight: 400; margin: 0; line-height: 1.5; }
+
+  /* ── SUBMIT ── */
+  .submit-area { text-align: center; margin-top: 1.5rem; padding-bottom: 2rem; }
+  .submit-btn {
+    background: linear-gradient(135deg, #1a3560, #2563a8);
+    color: white; border: none; border-radius: 10px;
+    padding: 14px 40px; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+    width: 100%; max-width: 360px;
+  }
+  .submit-btn:hover { opacity: 0.93; transform: translateY(-1px); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { background: #b0bac8; cursor: not-allowed; transform: none; }
+  .submit-note { font-size: 12px; color: #8a95b0; margin-top: 8px; }
+
+  /* ── SUCCESS ── */
+  .success-block {
+    display: none; background: white; border-radius: 14px;
+    border: 1px solid #a8d5b8; padding: 2.5rem 1.75rem;
+    text-align: center; margin-bottom: 2rem;
+  }
+  .success-block.show { display: block; }
+  .success-icon { font-size: 3rem; margin-bottom: 0.875rem; display: block; }
+  .success-block h2 { color: #1a6640; font-size: 1.25rem; margin-bottom: 0.4rem; }
+  .success-block p  { color: #4a6860; font-size: 0.9rem; line-height: 1.6; }
+  .receipt {
+    background: #f0faf5; border-radius: 10px; padding: 1rem 1.125rem;
+    margin-top: 1.125rem; font-size: 13px; color: #2d5a40; text-align: left;
+  }
+  .receipt-row { display: flex; justify-content: space-between; align-items: baseline;
+    padding: 5px 0; border-bottom: 0.5px solid #c8e8d5; gap: 8px; }
+  .receipt-row:last-child { border-bottom: none; }
+  .receipt-label { color: #6b8a70; flex-shrink: 0; }
+  .receipt-val   { text-align: right; word-break: break-word; }
+
+  /* ── ERRORS ── */
+  .error-msg { font-size: 12px; color: #d64040; margin-top: 4px; display: none; }
+  .error-msg.show { display: block; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ══ MOBILE ══════════════════════════════════════════ */
+  @media (max-width: 580px) {
+    body { padding: 1rem 0.75rem; }
+
+    .header-block { padding: 1.25rem; border-radius: 12px; }
+    .header-block h1 { font-size: 1.15rem; }
+    .header-block p  { font-size: 0.82rem; }
+
+    .section-card { padding: 1.125rem; border-radius: 10px; }
+    .section-title { font-size: 0.95rem; }
+    .section-hint  { display: none; }   /* скрываем на телефоне — экономим место */
+
+    /* ФИО — стек на телефоне */
+    .field-row { grid-template-columns: 1fr; gap: 0.75rem; }
+
+    label { font-size: 13px; }
+    input[type="text"], textarea { font-size: 16px; /* предотвращает zoom на iOS */ }
+
+    /* Тип результата — 2 колонки на телефоне */
+    .output-type-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .output-option label { padding: 8px 4px; font-size: 11px; min-height: 58px; }
+
+    /* Теги базы знаний — мельче */
+    .kb-tag-option label { font-size: 11px; padding: 5px 10px; }
+
+    .submit-btn { padding: 13px 20px; font-size: 14px; max-width: 100%; }
+
+    .receipt-row { flex-direction: column; gap: 2px; }
+    .receipt-val  { text-align: left; }
+
+    .apply-block { padding: 1rem; }
+
+    /* upload зоны — компактнее */
+    .upload-zone { padding: 1.25rem 0.75rem; }
+    .upload-icon { font-size: 1.75rem; }
+    .upload-text { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="header-block">
+    <div class="course-tag">Технологии ИИ в управлении бизнесом · MBA</div>
+    <h1>Практика — Проектный режим в ИИ-инструментах</h1>
+    <p>Электронная сдача задания. Опишите ассистента, системный промт, базу знаний, пример взаимодействия — и прикрепите файлы.</p>
+    <div class="competency-strip">
+      <span class="comp-badge">К3 — Prompt &amp; tool fluency</span>
+      <span class="comp-badge">К4 — Цифровая трансформация</span>
+      <span class="comp-badge">К2 — AI-driven decision making</span>
+    </div>
+  </div>
+
+  <div class="instructions-strip">
+    <strong>Как сдать работу:</strong> заполните все обязательные поля → прикрепите файлы → нажмите «Отправить работу». Данные автоматически сохранятся у преподавателя. Повторная отправка недоступна.
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-block" id="successBlock">
+    <span class="success-icon">✅</span>
+    <h2>Работа успешно отправлена!</h2>
+    <p>Файлы и все данные сохранены. Преподаватель ознакомится с работой и вернётся с обратной связью.</p>
+    <div class="receipt" id="receipt"></div>
+  </div>
+
+  <div id="formWrap">
+
+    <!-- ── 1. СТУДЕНТ ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="step-num">1</div>
+        <span class="section-title">Данные студента</span>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label for="lastName">Фамилия<span class="req">*</span></label>
+          <input type="text" id="lastName" placeholder="Закирова" autocomplete="family-name">
+          <div class="error-msg" id="err-lastName">Введите фамилию</div>
+        </div>
+        <div class="field-group">
+          <label for="firstName">Имя<span class="req">*</span></label>
+          <input type="text" id="firstName" placeholder="Мадина" autocomplete="given-name">
+          <div class="error-msg" id="err-firstName">Введите имя</div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label for="groupCode">Группа / поток<span class="req">*</span></label>
+        <input type="text" id="groupCode" placeholder="MBA-24-1">
+        <div class="error-msg" id="err-groupCode">Укажите группу</div>
+      </div>
+    </div>
+
+    <!-- ── 2. ОПИСАНИЕ АССИСТЕНТА ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="step-num">2</div>
+        <span class="section-title">Описание ассистента</span>
+        <span class="section-hint">своими словами</span>
+      </div>
+      <div class="field-group">
+        <label for="assistantName">Название / имя ассистента<span class="req">*</span></label>
+        <input type="text" id="assistantName" placeholder="Например: Аналитик рекламных кампаний">
+        <div class="error-msg" id="err-assistantName">Введите название ассистента</div>
+      </div>
+      <div class="field-group">
+        <label for="assistantDesc">
+          Для чего нужен этот ассистент — опишите своими словами<span class="req">*</span>
+          <span class="hint">100–400 символов · не копируйте системный промт</span>
+        </label>
+        <textarea id="assistantDesc" rows="4" maxlength="400"
+          placeholder="Например: Ассистент помогает маркетологу быстро анализировать результаты рекламных кампаний. Принимает данные и формирует краткий отчёт с ключевыми выводами и рекомендациями на следующую неделю."></textarea>
+        <div class="char-limit-bar"><div class="char-limit-fill" id="descFill" style="width:0%"></div></div>
+        <div class="char-counter" id="descCounter">0 / 400</div>
+        <div class="error-msg" id="err-assistantDesc">Введите описание (не менее 100 символов)</div>
+      </div>
+      <div class="field-group">
+        <label for="useCase">Реальная бизнес-задача, которую решает ассистент<span class="req">*</span>
+          <span class="hint">Из вашего сквозного проекта</span>
+        </label>
+        <input type="text" id="useCase" placeholder="Еженедельный анализ рекламных кампаний для e-commerce магазина">
+        <div class="error-msg" id="err-useCase">Опишите бизнес-задачу</div>
+      </div>
+    </div>
+
+    <!-- ── 3. СИСТЕМНЫЙ ПРОМТ ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="step-num">3</div>
+        <span class="section-title">Системный промт</span>
+      </div>
+      <div class="prompt-note">
+        Вставьте полный текст системного промта, который вы написали для ассистента. Это именно тот текст, который вы поместили в поле «System prompt» в настройках проекта.
+      </div>
+      <div class="field-group">
+        <label for="systemPrompt">Полный системный промт<span class="req">*</span></label>
+        <textarea id="systemPrompt" rows="8" maxlength="3000"
+          placeholder="Ты — опытный маркетинговый аналитик. Твоя задача — анализировать данные рекламных кампаний и формировать структурированные отчёты.
+
+Контекст: работаешь с командой маркетинга e-commerce компании.
+
+Ограничения:
+— Отвечай только на русском языке
+— Не придумывай данные — используй только предоставленное
+— Объём ответа — не более 400 слов
+
+Формат вывода:
+1. Ключевые метрики
+2. Выводы (3–5 пунктов)
+3. Рекомендации на следующую неделю"></textarea>
+        <div class="error-msg" id="err-systemPrompt">Вставьте системный промт (не менее 50 символов)</div>
+      </div>
+    </div>
+
+    <!-- ── 4. БАЗА ЗНАНИЙ ── -->
+    <div class="section-card kb-accent">
+      <div class="section-header">
+        <div class="step-num" style="background:#6b3fd4">4</div>
+        <span class="section-title">База знаний проекта</span>
+        <span class="section-hint">что загружено в проект</span>
+      </div>
+
+      <div class="prompt-note kb-note">
+        Сделайте скриншот раздела «Files» вашего проекта — там видно все загруженные файлы. Прикрепите скриншот и кратко опишите каждый файл.
+      </div>
+
+      <!-- Чекбоксы типов -->
+      <div class="field-group">
+        <label>Что загружено в базу знаний?<span class="req">*</span>
+          <span class="hint">Выберите всё, что есть в вашем проекте</span>
+        </label>
+        <div class="kb-tag-grid">
+          <div class="kb-tag-option">
+            <input type="checkbox" id="kb-doc" name="kbType" value="Документ / регламент">
+            <label for="kb-doc">📄 Документ / регламент</label>
+          </div>
+          <div class="kb-tag-option">
+            <input type="checkbox" id="kb-table" name="kbType" value="Таблица с данными">
+            <label for="kb-table">📊 Таблица с данными</label>
+          </div>
+          <div class="kb-tag-option">
+            <input type="checkbox" id="kb-report" name="kbType" value="Отчёт / аналитика">
+            <label for="kb-report">📑 Отчёт / аналитика</label>
+          </div>
+          <div class="kb-tag-option">
+            <input type="checkbox" id="kb-instr" name="kbType" value="Инструкция / шаблон">
+            <label for="kb-instr">📋 Инструкция / шаблон</label>
+          </div>
+          <div class="kb-tag-option">
+            <input type="checkbox" id="kb-corp" name="kbType" value="Корпоративные данные">
+            <label for="kb-corp">🏢 Корпоративные данные</label>
+          </div>
+          <div class="kb-tag-option">
+            <input type="checkbox" id="kb-none" name="kbType" value="Не использовалась">
+            <label for="kb-none">— Не использовалась</label>
+          </div>
+        </div>
+        <div class="error-msg" id="err-kbType">Выберите хотя бы один вариант</div>
+      </div>
+
+      <!-- Скриншот раздела Files -->
+      <div class="field-group" id="kbUploadBlock">
+        <label>Скриншот раздела «Files» проекта<span class="req" id="kbReqStar">*</span>
+          <span class="hint" id="kbUploadHint">Сделайте скриншот — на нём должны быть видны названия загруженных файлов</span>
+        </label>
+        <div class="upload-zone kb-zone" id="uploadZoneKB">
+          <input type="file" id="fileInputKB"
+            accept=".png,.jpg,.jpeg,.gif,.webp"
+            onchange="handleFileKBScreenshot(this)">
+          <div class="upload-req-badge" id="kbReqBadge">обязательно</div>
+          <span class="upload-icon">📸</span>
+          <div class="upload-text">Прикрепите скриншот</div>
+          <div class="upload-formats">PNG · JPG · GIF · WEBP · до 20 МБ</div>
+        </div>
+        <div class="file-preview kb-prev" id="filePreviewKB">
+          <span class="file-preview-icon" id="previewIconKB">🖼️</span>
+          <span class="file-preview-name" id="previewNameKB"></span>
+          <span class="file-preview-size" id="previewSizeKB"></span>
+          <button class="file-remove" onclick="removeFileKBScreenshot()" title="Удалить">✕</button>
+        </div>
+        <div class="error-msg" id="err-kbFile">Прикрепите скриншот базы знаний</div>
+      </div>
+
+      <!-- Текстовое описание файлов -->
+      <div class="field-group" style="margin-bottom:0">
+        <label for="kbDesc">Опишите файлы базы знаний<span class="req">*</span>
+          <span class="hint">Сколько файлов, название каждого и за что отвечает</span>
+        </label>
+        <textarea id="kbDesc" rows="4" maxlength="600"
+          placeholder="3 файла:
+1. sales_april.xlsx — таблица продаж за апрель, ассистент берёт из неё данные для анализа
+2. product_catalog.pdf — каталог товаров, нужен для сопоставления SKU с категориями
+3. kpi_targets.docx — плановые показатели KPI, ассистент сверяет факт с планом"></textarea>
+        <div class="error-msg" id="err-kbDesc">Опишите файлы базы знаний</div>
+      </div>
+    </div>
+
+    <!-- ── 5. ВЗАИМОДЕЙСТВИЕ ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="step-num">5</div>
+        <span class="section-title">Пример взаимодействия</span>
+      </div>
+      <div class="field-group">
+        <label for="userQuery">Запрос, который вы дали ассистенту<span class="req">*</span>
+          <span class="hint">Точный текст вашего сообщения</span>
+        </label>
+        <textarea id="userQuery" rows="3" maxlength="800"
+          placeholder="Проанализируй результаты рекламных кампаний за апрель. Выдели топ-3 по ROI и укажи, какие стоит отключить."></textarea>
+        <div class="error-msg" id="err-userQuery">Введите запрос</div>
+      </div>
+      <div class="field-group">
+        <label for="outputSummary">Краткое описание полученного результата<span class="req">*</span>
+          <span class="hint">Что сделал ассистент? Сам файл прикрепите в блоке 6.</span>
+        </label>
+        <textarea id="outputSummary" rows="3" maxlength="600"
+          placeholder="Ассистент сформировал отчёт с ROI по 12 кампаниям, выделил 3 лидера и предложил отключить 4 убыточные. Результат — таблица + рекомендации."></textarea>
+        <div class="error-msg" id="err-outputSummary">Опишите результат</div>
+      </div>
+      <div class="field-group">
+        <label>Тип выходного файла<span class="req">*</span></label>
+        <div class="output-type-grid">
+          <div class="output-option">
+            <input type="radio" name="outputType" id="ot-text" value="Текст / документ">
+            <label for="ot-text"><span class="icon">📄</span>Текст / документ</label>
+          </div>
+          <div class="output-option">
+            <input type="radio" name="outputType" id="ot-image" value="Изображение">
+            <label for="ot-image"><span class="icon">🖼️</span>Изображение</label>
+          </div>
+          <div class="output-option">
+            <input type="radio" name="outputType" id="ot-table" value="Таблица / Excel">
+            <label for="ot-table"><span class="icon">📊</span>Таблица / Excel</label>
+          </div>
+          <div class="output-option">
+            <input type="radio" name="outputType" id="ot-code" value="Код / артефакт">
+            <label for="ot-code"><span class="icon">💻</span>Код / артефакт</label>
+          </div>
+          <div class="output-option">
+            <input type="radio" name="outputType" id="ot-pdf" value="PDF-отчёт">
+            <label for="ot-pdf"><span class="icon">📑</span>PDF-отчёт</label>
+          </div>
+          <div class="output-option">
+            <input type="radio" name="outputType" id="ot-other" value="Другое">
+            <label for="ot-other"><span class="icon">📎</span>Другое</label>
+          </div>
+        </div>
+        <div class="error-msg" id="err-outputType">Выберите тип выходного файла</div>
+      </div>
+    </div>
+
+    <!-- ── 6. ФАЙЛ РЕЗУЛЬТАТА ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="step-num">6</div>
+        <span class="section-title">Файл с результатом работы</span>
+        <span class="section-hint">обязательно</span>
+      </div>
+      <p style="font-size:13px; color:#6b7a99; margin-bottom:1rem; line-height:1.5;">
+        Прикрепите скриншот, экспорт или любой файл, демонстрирующий что именно выдал ассистент. Если результат — текст в чате, сделайте скриншот или скопируйте в документ.
+      </p>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput"
+          accept=".pdf,.png,.jpg,.jpeg,.gif,.docx,.xlsx,.txt,.csv,.html,.zip"
+          onchange="handleFileSelect(this)">
+        <span class="upload-icon">☁️</span>
+        <div class="upload-text">Нажмите или перетащите файл сюда</div>
+        <div class="upload-sub">Максимум 20 МБ</div>
+        <div class="upload-formats">PDF · PNG · JPG · DOCX · XLSX · CSV · TXT · HTML · ZIP</div>
+      </div>
+      <div class="file-preview result-prev" id="filePreview">
+        <span class="file-preview-icon" id="previewIcon">📄</span>
+        <span class="file-preview-name" id="previewName"></span>
+        <span class="file-preview-size" id="previewSize"></span>
+        <button class="file-remove" onclick="removeFile()" title="Удалить">✕</button>
+      </div>
+      <div class="error-msg" id="err-file">Прикрепите файл с результатом работы</div>
+    </div>
+
+    <!-- ── 7. РЕФЛЕКСИЯ ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="step-num">7</div>
+        <span class="section-title">Рефлексия и применение</span>
+        <span class="section-hint">влияет на оценку</span>
+      </div>
+      <div class="field-group">
+        <label for="reflection">Что сработало хорошо? Что бы вы улучшили в промте или базе знаний?
+          <span class="hint">2–4 предложения</span>
+        </label>
+        <textarea id="reflection" rows="3" maxlength="600"
+          placeholder="Ассистент точно выделил структуру, но первый раз давал слишком длинный ответ. Добавил ограничение — качество выросло. Понял, что база знаний работает лучше, когда данные структурированы заранее..."></textarea>
+      </div>
+      <div class="apply-block">
+        <div class="apply-block-title">🚀 Как я планирую применять этот ассистент в реальной работе</div>
+        <div class="field-group" style="margin-bottom:0">
+          <label for="applyPlan">Опишите конкретную ситуацию или процесс в вашей компании
+            <span class="hint">2–5 предложений</span>
+          </label>
+          <textarea id="applyPlan" rows="4" maxlength="700"
+            placeholder="Каждый понедельник отдел тратит 2 часа на сведение отчётов из трёх платформ. Этот ассистент возьмёт на себя первичный анализ и выдаст дайджест за 5 минут. Это освободит аналитика для стратегических задач..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- СОГЛАСИЕ -->
+    <div class="section-card">
+      <div class="consent-block">
+        <div class="consent-row">
+          <input type="checkbox" id="consent" onchange="toggleSubmit()">
+          <label for="consent">
+            Подтверждаю, что работа выполнена мной самостоятельно. Я понимаю, что преподаватель видит все поля этой формы и прикреплённые файлы. Повторная отправка недоступна.
+          </label>
+        </div>
+      </div>
+      <div class="error-msg" id="err-consent">Подтвердите согласие перед отправкой</div>
+    </div>
+
+    <!-- КНОПКА -->
+    <div class="submit-area">
+      <button class="submit-btn" id="submitBtn" onclick="handleSubmit()" disabled>
+        Отправить работу
+      </button>
+      <div class="submit-note">После отправки появится подтверждение с номером вашей работы</div>
+    </div>
+
+  </div><!-- /formWrap -->
+</div><!-- /page-wrap -->
+
+<script>
+  const GAS_URL         = 'https://script.google.com/macros/s/AKfycbzlIbXCKarw4yc13APMHA_qIPnQo7GH8Kzo7kQUWW21jzF-qQXHtubq0Ky2nl5TOPCs/exec';
+  const DRIVE_FOLDER_ID = '1jI4eL2M7dHySltpi66HNp1ENvlzbe1e7';
+
+  let selectedFile         = null;
+  let selectedKBScreenshot = null;
+  let kbIsNone             = false;   // ← ГЛОБАЛЬНАЯ переменная (была не объявлена)
+
+  const ICONS = { pdf:'📑', png:'🖼️', jpg:'🖼️', jpeg:'🖼️', gif:'🖼️', webp:'🖼️',
+                  docx:'📄', xlsx:'📊', csv:'📊', txt:'📝', html:'💻', zip:'📦', pptx:'📽️' };
+
+  // ══════════════════════════════════════════════════════════
+  //  AUTOSAVE — localStorage
+  //  Поля сохраняются при каждом вводе, восстанавливаются при перезагрузке
+  // ══════════════════════════════════════════════════════════
+  const LS_KEY = 'п4_autosave';
+
+  const TEXT_FIELDS = [
+    'lastName','firstName','groupCode',
+    'assistantName','assistantDesc','useCase',
+    'systemPrompt','kbDesc',
+    'userQuery','outputSummary',
+    'reflection','applyPlan'
+  ];
+
+  function saveToLS() {
+    const data = {};
+    TEXT_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) data[id] = el.value;
+    });
+    // чекбоксы kbType
+    data.kbTypes = Array.from(document.querySelectorAll('input[name="kbType"]:checked'))
+      .map(el => el.value);
+    // radio outputType
+    const ot = document.querySelector('input[name="outputType"]:checked');
+    data.outputType = ot ? ot.value : '';
+    try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch(e) {}
+  }
+
+  function restoreFromLS() {
+    let data;
+    try { data = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch(e) {}
+    if (!data) return;
+
+    TEXT_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && data[id] !== undefined) el.value = data[id];
+    });
+
+    // восстанавливаем чекбоксы
+    if (Array.isArray(data.kbTypes)) {
+      document.querySelectorAll('input[name="kbType"]').forEach(cb => {
+        cb.checked = data.kbTypes.includes(cb.value);
+      });
+      kbIsNone = data.kbTypes.includes('Не использовалась');
+      updateKBUploadVisibility();
+    }
+
+    // восстанавливаем radio
+    if (data.outputType) {
+      const r = document.querySelector(`input[name="outputType"][value="${CSS.escape(data.outputType)}"]`);
+      if (r) r.checked = true;
+    }
+
+    // обновляем счётчик символов описания
+    const descTA = document.getElementById('assistantDesc');
+    if (descTA) descTA.dispatchEvent(new Event('input'));
+  }
+
+  function clearLS() {
+    try { localStorage.removeItem(LS_KEY); } catch(e) {}
+  }
+
+  // Вешаем autosave на все текстовые поля
+  document.addEventListener('DOMContentLoaded', () => {
+    TEXT_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', saveToLS);
+    });
+    document.querySelectorAll('input[name="kbType"], input[name="outputType"]')
+      .forEach(el => el.addEventListener('change', saveToLS));
+
+    // Восстанавливаем сохранённые данные
+    restoreFromLS();
+
+    // Баннер «данные восстановлены»
+    try {
+      if (localStorage.getItem(LS_KEY)) {
+        const banner = document.createElement('div');
+        banner.style.cssText = 'background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:10px 14px;font-size:12px;color:#2e7d32;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;';
+        banner.innerHTML = '<span>💾 Данные формы восстановлены из сохранения</span><button onclick="clearLS();this.parentNode.remove()" style="background:none;border:none;cursor:pointer;color:#2e7d32;font-size:18px;line-height:1;">×</button>';
+        document.getElementById('formWrap').prepend(banner);
+      }
+    } catch(e) {}
+  });
+
+  // ── KB: скриншот ──
+  function handleFileKBScreenshot(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) { alert('Файл превышает 20 МБ.'); input.value = ''; return; }
+    selectedKBScreenshot = file;
+    document.getElementById('previewIconKB').textContent = '🖼️';
+    document.getElementById('previewNameKB').textContent = file.name;
+    document.getElementById('previewSizeKB').textContent = formatSize(file.size);
+    document.getElementById('filePreviewKB').classList.add('show');
+    document.getElementById('err-kbFile').classList.remove('show');
+  }
+  function removeFileKBScreenshot() {
+    selectedKBScreenshot = null;
+    document.getElementById('fileInputKB').value = '';
+    document.getElementById('filePreviewKB').classList.remove('show');
+  }
+
+  // Drag-and-drop — KB скриншот
+  const uzKB = document.getElementById('uploadZoneKB');
+  uzKB.addEventListener('dragover',  e => { e.preventDefault(); uzKB.classList.add('dragover'); });
+  uzKB.addEventListener('dragleave', () => uzKB.classList.remove('dragover'));
+  uzKB.addEventListener('drop', e => {
+    e.preventDefault(); uzKB.classList.remove('dragover');
+    const f = e.dataTransfer.files[0];
+    if (f) {
+      const dt = new DataTransfer(); dt.items.add(f);
+      document.getElementById('fileInputKB').files = dt.files;
+      handleFileKBScreenshot(document.getElementById('fileInputKB'));
+    }
+  });
+
+  // ── CHAR COUNTER ──
+  const descTA = document.getElementById('assistantDesc');
+  descTA.addEventListener('input', () => {
+    const len = descTA.value.length;
+    document.getElementById('descCounter').textContent = len + ' / 400';
+    document.getElementById('descFill').style.width = (len / 400 * 100) + '%';
+    document.getElementById('descCounter').classList.toggle('warn', len > 370);
+    document.getElementById('descFill').style.background =
+      len > 370 ? '#d64040' : len >= 100 ? '#2563a8' : '#e29a2e';
+  });
+
+  // ── KB NONE TOGGLE: скрывает загрузчики если "не использовалась" ──
+  document.getElementById('kb-none').addEventListener('change', function() {
+    kbIsNone = this.checked;
+    if (this.checked) {
+      document.querySelectorAll('input[name="kbType"]:not(#kb-none)')
+        .forEach(cb => { cb.checked = false; });
+    }
+    updateKBUploadVisibility();
+  });
+  document.querySelectorAll('input[name="kbType"]:not(#kb-none)').forEach(cb => {
+    cb.addEventListener('change', function() {
+      if (this.checked) {
+        document.getElementById('kb-none').checked = false;
+        kbIsNone = false;
+      }
+      updateKBUploadVisibility();
+    });
+  });
+
+  function updateKBUploadVisibility() {
+    const block = document.getElementById('kbUploadBlock');
+    const star  = document.getElementById('kbReqStar');
+    const badge = document.getElementById('kbReqBadge');
+    const hint  = document.getElementById('kbUploadHint');
+    if (kbIsNone) {
+      block.style.opacity = '0.4';
+      block.style.pointerEvents = 'none';
+      star.style.display  = 'none';
+      badge.style.display = 'none';
+      hint.textContent    = 'Не требуется — база знаний не использовалась';
+    } else {
+      block.style.opacity = '1';
+      block.style.pointerEvents = 'auto';
+      star.style.display  = 'inline';
+      badge.style.display = 'inline-block';
+      hint.textContent    = 'Загрузите все файлы, которые добавили в проект (до 3 файлов)';
+    }
+  }
+
+  // ── CONSENT ──
+  function toggleSubmit() {
+    document.getElementById('submitBtn').disabled = !document.getElementById('consent').checked;
+  }
+
+  // ── FILE: результат ──
+  function handleFileSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) { alert('Файл превышает 20 МБ.'); input.value=''; return; }
+    selectedFile = file;
+    const ext = file.name.split('.').pop().toLowerCase();
+    document.getElementById('previewIcon').textContent = ICONS[ext] || '📎';
+    document.getElementById('previewName').textContent = file.name;
+    document.getElementById('previewSize').textContent = formatSize(file.size);
+    document.getElementById('filePreview').classList.add('show');
+    document.getElementById('err-file').classList.remove('show');
+  }
+  function removeFile() {
+    selectedFile = null;
+    document.getElementById('fileInput').value = '';
+    document.getElementById('filePreview').classList.remove('show');
+  }
+
+  // Drag-and-drop — результат
+  const uz = document.getElementById('uploadZone');
+  uz.addEventListener('dragover',  e => { e.preventDefault(); uz.classList.add('dragover'); });
+  uz.addEventListener('dragleave', () => uz.classList.remove('dragover'));
+  uz.addEventListener('drop', e => {
+    e.preventDefault(); uz.classList.remove('dragover');
+    const f = e.dataTransfer.files[0];
+    if (f) { const dt = new DataTransfer(); dt.items.add(f); document.getElementById('fileInput').files = dt.files; handleFileSelect(document.getElementById('fileInput')); }
+  });
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' Б';
+    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' КБ';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' МБ';
+  }
+  function getRadio(name) {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : '';
+  }
+  function getChecked(name) {
+    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
+      .map(el => el.value).join(', ');
+  }
+
+  // ── VALIDATE ──
+  function validate() {
+    let ok = true;
+    const rules = [
+      ['lastName',      v => v.trim().length >= 2,   'err-lastName'],
+      ['firstName',     v => v.trim().length >= 2,   'err-firstName'],
+      ['groupCode',     v => v.trim().length >= 2,   'err-groupCode'],
+      ['assistantName', v => v.trim().length >= 2,   'err-assistantName'],
+      ['assistantDesc', v => v.trim().length >= 100, 'err-assistantDesc'],
+      ['useCase',       v => v.trim().length >= 5,   'err-useCase'],
+      ['systemPrompt',  v => v.trim().length >= 50,  'err-systemPrompt'],
+      ['kbDesc',        v => v.trim().length >= 5,   'err-kbDesc'],
+      ['userQuery',     v => v.trim().length >= 10,  'err-userQuery'],
+      ['outputSummary', v => v.trim().length >= 10,  'err-outputSummary'],
+    ];
+    rules.forEach(([id, fn, errId]) => {
+      const valid = fn(document.getElementById(id)?.value || '');
+      document.getElementById(errId).classList.toggle('show', !valid);
+      if (!valid) ok = false;
+    });
+
+    const kbChecked = getChecked('kbType').length > 0;
+    document.getElementById('err-kbType').classList.toggle('show', !kbChecked);
+    if (!kbChecked) ok = false;
+
+    // Скриншот БЗ — обязателен если не "не использовалась"
+    const kbFileOk = kbIsNone || !!selectedKBScreenshot;
+    document.getElementById('err-kbFile').classList.toggle('show', !kbFileOk);
+    if (!kbFileOk) ok = false;
+
+    const outputType = getRadio('outputType');
+    document.getElementById('err-outputType').classList.toggle('show', !outputType);
+    if (!outputType) ok = false;
+
+    const fileOk = !!selectedFile;
+    document.getElementById('err-file').classList.toggle('show', !fileOk);
+    if (!fileOk) ok = false;
+
+    const consentOk = document.getElementById('consent').checked;
+    document.getElementById('err-consent').classList.toggle('show', !consentOk);
+    if (!consentOk) ok = false;
+
+    return ok;
+  }
+
+  // ── SUBMIT ──
+  async function handleSubmit() {
+    if (!validate()) {
+      document.querySelector('.error-msg.show')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:8px;vertical-align:middle;"></span>Отправка...';
+
+    const timestamp    = new Date().toLocaleString('ru-RU', { timeZone: 'Asia/Almaty' });
+    const submissionId = 'П-' + Date.now().toString(36).toUpperCase();
+
+    const fields = {
+      submissionId, timestamp,
+      lastName:      document.getElementById('lastName').value.trim(),
+      firstName:     document.getElementById('firstName').value.trim(),
+      group:         document.getElementById('groupCode').value.trim(),
+      assistantName: document.getElementById('assistantName').value.trim(),
+      assistantDesc: document.getElementById('assistantDesc').value.trim(),
+      useCase:       document.getElementById('useCase').value.trim(),
+      systemPrompt:  document.getElementById('systemPrompt').value.trim(),
+      kbTypes:       getChecked('kbType'),
+      kbDesc:        document.getElementById('kbDesc').value.trim(),
+      userQuery:     document.getElementById('userQuery').value.trim(),
+      outputSummary: document.getElementById('outputSummary').value.trim(),
+      outputType:    getRadio('outputType'),
+      reflection:    document.getElementById('reflection').value.trim(),
+      applyPlan:     document.getElementById('applyPlan').value.trim(),
+      fileName:        selectedFile ? selectedFile.name : '',
+      kbScreenshotName: selectedKBScreenshot ? selectedKBScreenshot.name : '',
+    };
+
+    try {
+      setStatus('Подготовка файлов...');
+
+      // ── gasPost: универсальная отправка через XHR (работает с file://) ──
+      function gasPost(payload) {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', GAS_URL, true);
+          xhr.setRequestHeader('Content-Type', 'text/plain');
+          xhr.onload  = () => resolve();
+          xhr.onerror = () => reject(new Error('Сетевая ошибка. Проверьте интернет.'));
+          xhr.send(JSON.stringify(payload));
+        });
+      }
+
+      // ── Запрос 1: все текстовые данные + файл результата ──
+      const fb64  = selectedFile ? await fileToBase64(selectedFile) : '';
+      const fmime = selectedFile ? (selectedFile.type || 'application/octet-stream') : '';
+
+      setStatus('Отправка данных формы...');
+      await gasPost({
+        action: 'saveMain',
+        ...fields,
+        fileBase64:    fb64,
+        fileMime:      fmime,
+        driveFolderId: DRIVE_FOLDER_ID,
+      });
+
+      // ── Запрос 2: скриншот БЗ отдельно (если есть) ──
+      if (selectedKBScreenshot) {
+        setStatus('Загрузка скриншота базы знаний...');
+        const kb64  = await fileToBase64(selectedKBScreenshot);
+        const kmime = selectedKBScreenshot.type || 'image/png';
+        await gasPost({
+          action:             'saveKBScreenshot',
+          submissionId:       fields.submissionId,
+          lastName:           fields.lastName,
+          firstName:          fields.firstName,
+          kbScreenshotName:   selectedKBScreenshot.name,
+          kbScreenshotBase64: kb64,
+          kbScreenshotMime:   kmime,
+          driveFolderId:      DRIVE_FOLDER_ID,
+        });
+      }
+
+      clearLS();           // очищаем autosave после успешной отправки
+      showSuccess(fields);
+
+    } catch (err) {
+      btn.disabled = false;
+      btn.innerHTML = '🔄 Попробовать снова';
+      alert('Ошибка при отправке.\n\nПроверьте интернет-соединение и попробуйте ещё раз.\n\nДетали: ' + err.message);
+    }
+  }
+
+  function setStatus(text) {
+    document.getElementById('submitBtn').innerHTML =
+      `<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:8px;vertical-align:middle;"></span>${text}`;
+  }
+
+  function fileToBase64(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(file);
+    });
+  }
+
+  function showSuccess(fields) {
+    document.getElementById('formWrap').style.display = 'none';
+    document.getElementById('successBlock').classList.add('show');
+    const kbFiles = fields.kbFileNames && fields.kbFileNames.length
+      ? fields.kbFileNames.join(', ')
+      : 'не прикреплены';
+    document.getElementById('receipt').innerHTML = `
+      <div class="receipt-row"><span class="receipt-label">Номер работы</span><span class="receipt-val"><strong>${fields.submissionId}</strong></span></div>
+      <div class="receipt-row"><span class="receipt-label">Студент</span><span class="receipt-val">${fields.lastName} ${fields.firstName}</span></div>
+      <div class="receipt-row"><span class="receipt-label">Группа</span><span class="receipt-val">${fields.group}</span></div>
+      <div class="receipt-row"><span class="receipt-label">Ассистент</span><span class="receipt-val">${fields.assistantName}</span></div>
+      <div class="receipt-row"><span class="receipt-label">База знаний</span><span class="receipt-val">${fields.kbTypes}</span></div>
+      <div class="receipt-row"><span class="receipt-label">Скриншот БЗ</span><span class="receipt-val">${fields.kbScreenshotName || '—'}</span></div>
+      <div class="receipt-row"><span class="receipt-label">Файл результата</span><span class="receipt-val">${fields.fileName || '—'}</span></div>
+      <div class="receipt-row"><span class="receipt-label">Время сдачи</span><span class="receipt-val">${fields.timestamp}</span></div>
+    `;
+    document.getElementById('successBlock').scrollIntoView({ behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
